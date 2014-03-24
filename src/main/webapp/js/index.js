@@ -4,7 +4,7 @@ Index = {
             url:"rest/dc/is-any-registered",
             success: function(data){
                 if (data == false){
-                    $("#alert-holder").load("jsp/dc/_dc_alert_first_access.jsp");
+                    $("#alert-holder").load("jsp/dc/partials/_dc_alert_first_access.jsp");
                 }
             }
         })
