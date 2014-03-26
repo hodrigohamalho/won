@@ -33,8 +33,8 @@ DC = {
             url: DCURL,
             type: "GET",
             dataType: "json",
-            before: function(){
-                var text = "<tr><td colspan='4'><img src='"+contextPath+"/gfx/load.gif' alt='loading...' /></td></tr>";
+            beforeSend: function(){
+                var text = "<tr><td colspan='4'>"+loadIcon+"</td></tr>";
                 dcTableBody.html(text);
             },
             success: function(domainControllers){
@@ -78,10 +78,49 @@ DC = {
 
     },
 
+    installTestConnectionAction: function () {
+
+        $(".btn-test-connection").click(function(e){
+            e.preventDefault();
+            var self = $(this);
+
+            var currentRow = $(this).parents("tr");
+            var id = currentRow.find("div.id").html();
+            var span = "";
+
+            $.ajax({
+                url: DCURL + "test-connection/"+ id,
+                type: "GET",
+                beforeSend: function(){
+                    var spinButton = $(loadIcon).attr("width", "12px");
+                    spinButton = $(loadIcon).attr("height", "14px");
+                    span = self.html();
+                    self.html(spinButton);
+                },
+                success: function(isConnectionWorking){
+                    isConnectionWorking = WON.stringToBoolean(isConnectionWorking);
+                    if (isConnectionWorking){
+                       WON.message(AlertType.SUCCESS, "Connection working!", null);
+                    }else{
+                       WON.message(AlertType.DANGER, "Connection not established :/ ", null);
+                    }
+                },
+                error: function(){
+                    console.log("funfou não");
+                },
+                complete: function(){
+                    self.html(span);
+                }
+            });
+        });
+
+    },
+
     installCrudActions: function(){
 
         DC.installEditAction();
         DC.installRemoveAction();
+        DC.installTestConnectionAction();
 
     },
 
@@ -92,7 +131,10 @@ DC = {
             e.preventDefault();
 
             var currentRow = $(this).parents("tr");
+            // TODO It should made a request to retrieve object from database, or not? :)
             self._fillForm(currentRow);
+
+            WON.scrollToElement("#form-dc");
 
             form.unbind();
             form.submit(function(f){
@@ -121,18 +163,22 @@ DC = {
     installRemoveAction: function(){
         $(".btn-remove").click(function(e){
             e.preventDefault();
-            var currentRow = $(this).parents("tr");
-            var id = currentRow.find("div.id").html();
 
-            $.ajax({
-                url: DCURL + id,
-                type: "DELETE",
-                success: function(){
-                    $(currentRow).hide("slow", function(){
-                        $(currentRow).remove();
-                    });
-                }
-            });
+            // TODO confirm before remove. http://qtip2.com/
+            if (confirm("Are you sure?")){
+                var currentRow = $(this).parents("tr");
+                var id = currentRow.find("div.id").html();
+
+                $.ajax({
+                    url: DCURL + id,
+                    type: "DELETE",
+                    success: function(){
+                        $(currentRow).hide("slow", function(){
+                            $(currentRow).remove();
+                        });
+                    }
+                });
+            }
         });
     },
 

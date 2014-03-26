@@ -65,17 +65,16 @@
             <td data-name="active" data-value="false"><button class="btn btn-danger btn-sm">Not collecting</button></td>
         {{/if}}
         <td>
-            <button type="button" id="btn-edit" class="btn btn-default btn-sm ">
+            <button type="button" class="btn btn-default btn-sm btn-edit" title="Edit">
                 <span class="glyphicon glyphicon-pencil"></span>
             </button>
-            <button type="button" id="btn-remove" class="btn btn-default btn-sm ">
+            <button type="button" class="btn btn-default btn-sm btn-remove" title="Remove it!">
                 <span class="glyphicon glyphicon-remove"></span>
             </button>
-            <button type="button" id ="btn-test-connection" class="btn btn-default btn-sm">
-                <span class="glyphicon glyphicon-remove"></span>
+            <button type="button" class="btn btn-default btn-sm btn-test-connection"
+                    title="Test connection with Domain Controller">
+                <span class="glyphicon glyphicon-transfer"></span>
             </button>
-
-
         </td>
         <td class="hidden" data-name="password" data-value="{{password}}"></td>
     </tr>

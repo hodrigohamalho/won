@@ -1,5 +1,6 @@
 package won.rest;
 
+import won.model.CLI;
 import won.model.DC;
 import won.util.HTTPUtil;
 
@@ -10,9 +11,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Rodrigo Ramalho
@@ -21,6 +22,8 @@ import java.util.Map;
 @Path("/dc")
 @Stateless
 public class DCRest {
+
+    private String errorMessage = "";
 
     @Inject
     private EntityManager em;
@@ -40,32 +43,34 @@ public class DCRest {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public DC create(DC dc) {
-        if (dc != null && dc.getId() != null && dc.getId() == -1){
+    public Response create(DC dc) {
+        try{
             dc.setId(null);
             em.persist(dc);
+        }catch (Exception e){
+            e.printStackTrace();
+            return throwError(e.getMessage());
         }
 
-        return dc;
+        return success(dc);
     }
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public DC update(DC dc){
-        System.out.println(dc);
+    public Response update(DC dc){
         if (dc != null && dc.getId() != null && dc.getId() != -1){
             em.merge(dc);
         }else{
-            throw new IllegalArgumentException("You need to pass a existing DC as parameter to update");
+            return throwError("You need to pass a existing DC as parameter to update");
         }
 
-        return dc;
+        return success(dc);
     }
 
     @GET
     @Produces("application/json")
-    public List<DC> getDCs(){
+    public List<DC> list(){
         try{
             Query query = em.createQuery("SELECT d FROM DC d");
             return (List<DC>) query.getResultList();
@@ -75,30 +80,76 @@ public class DCRest {
     }
 
     @Path("{id}")
+    @GET
+    @Produces("application/json")
+    public Response find(@PathParam("id") Integer id){
+        DC dc;
+
+        if (id != null){
+            try{
+               dc = em.find(DC.class, id);
+            }catch (Exception e){
+                return throwError(e.getMessage());
+            }
+        }else{
+            return throwError("ID cannot be null");
+        }
+
+        return success(dc);
+    }
+
+    @Path("{id}")
     @DELETE
-    public void destroy(@PathParam("id")Integer id){
+    public Response destroy(@PathParam("id") Integer id){
         if (id != null){
             DC dc = em.find(DC.class, id);
 
             if (dc != null){
                 em.remove(dc);
             }else{
-                throw new NoResultException("No results found for id "+id);
+                return throwError("No results found for id "+id);
             }
         }else{
-            throw new IllegalArgumentException("ID cannot be null");
+            return throwError("ID cannot be null");
+        }
+
+        return success();
+    }
+
+    @Path("test-connection/{id}")
+    @GET
+    public Response testConnection(@PathParam("id") Integer id){
+        if (id != null){
+            DC dc = em.find(DC.class, id);
+
+            if (dc != null){
+                CLI cli = new CLI("", false, false);
+
+                try {
+                    String json = HTTPUtil.retrieveJSONFromDC(dc, cli);
+                    return json != "" ? success(true) : success(false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return throwError(e.getMessage());
+                }
+            }else{
+                return throwError("No results found for id "+id);
+            }
+        }else{
+            return throwError("ID cannot be null");
         }
     }
 
+    private Response success(){
+        return Response.ok().build();
+    }
 
-    /**
-     * @deprecated it is now configurable trough database.
-     */
-    @GET
-    @Path("configurations")
-    @Produces("application/json")
-    public Map<String, String> getConfigurations(){
-        return HTTPUtil.propertiesToMap("configuration.properties");
+    private Response success(Object object){
+        return Response.ok().entity(object).build();
+    }
+
+    private Response throwError(String message) {
+        return Response.serverError().entity(message).build();
     }
 
 }

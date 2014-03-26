@@ -1,87 +1,102 @@
 package won.util;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import won.model.CLI;
+import won.model.DC;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.io.InputStream;
 
 
 /**
- *
- * @author rodrigoramalho
- *
+ * @author Rodrigo Ramalho
+ *         hodrigohamalho@gmail.com.
  */
 public class HTTPUtil {
 
-    public static String getJSONfromUrl(String urlPath, Boolean recursive, Boolean runtime) throws Exception {
+    // TODO it must be dynamic
+    public final static String REALM = "ManagementRealm";
 
-        Properties properties = new Properties();
+    // TODO ok, ok. This method name is not the best thing to see. lol
+    public static String retrieveJSONFromDC(DC dc, CLI cli) throws IOException {
         String json = "";
+        String url = generateJBossURL(dc, cli).toString();
 
-        properties.load(Thread.currentThread().getContextClassLoader().getResource("configuration.properties").openStream());
-        String host = properties.get("host").toString();
-        Integer port = Integer.valueOf(properties.get("port").toString());
-        String username = properties.get("username").toString();
-        String password = properties.get("password").toString();
-        String realm = properties.get("realm").toString();
+        DefaultHttpClient client = configureHttpClient();
+        authenticateClient(dc,client);
 
-        StringBuilder url = new StringBuilder("http://"+host+":"+port+"/"+"management"+urlPath);
-        url.append("?recursive=").
-            append(recursive.toString()).
-            append("&include-runtime=").
-            append(runtime.toString());
+        InputStream inputStream = null;
+        try{
+            HttpGet request = new HttpGet(url);
+            HttpResponse response = client.execute(request);
+            // Check if response server is valid
+            StatusLine status = response.getStatusLine();
 
-        HttpClient client = new HttpClient();
-        GetMethod getMethod = new GetMethod(url.toString());
+            if (status.getStatusCode() != 200)
+                throw new IOException("Invalid response from server: " + status.toString());
 
-        UsernamePasswordCredentials upc = new UsernamePasswordCredentials(username, password);
-        AuthScope as = new AuthScope(host, port, realm);
-        client.getState().setCredentials(as, upc);
+            HttpEntity entity = response.getEntity(); // Pull content Stream from server
+            inputStream = entity.getContent();
 
-        int status = client.executeMethod(getMethod);
-
-        if (status == 200){
-            String responseBody = getMethod.getResponseBodyAsString();
-            getMethod.releaseConnection();
-
-            json = responseBody;
-        }else if (status != 500){
-            throw new Exception("HTTP code returned on trying to connect with jboss domain controller: "+status);
+            json = responseContent(inputStream);
+        }catch (IOException io){
+            io.printStackTrace();
+        }finally {
+            if (inputStream != null)
+                inputStream.close();
         }
 
         return json;
     }
 
+    private static String responseContent(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream content = new ByteArrayOutputStream();
+        int readBytes = 0;
 
-    public static Map<String, String> propertiesToMap(String path){
-        Map<String, String> exportedProperties = new HashMap<String, String>();
-
-        try {
-            Properties props = new HTTPUtil().loadProperties(path);
-            Enumeration<String> propertyNames = (Enumeration<String>) props.propertyNames();
-            while (propertyNames.hasMoreElements()){
-                String p = propertyNames.nextElement();
-                exportedProperties.put(p, props.get(p).toString());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        // Read response into a buffered stream
+        byte[] sBuffer = new byte[512];
+        while ((readBytes = inputStream.read(sBuffer)) != -1) {
+          content.write(sBuffer, 0, readBytes);
         }
 
-        return exportedProperties;
+        return new String(content.toByteArray());
     }
 
+    private static void authenticateClient(DC dc, DefaultHttpClient client) {
+        UsernamePasswordCredentials upc = new UsernamePasswordCredentials(dc.getUsername(), dc.getPassword());
+        AuthScope as = new AuthScope(dc.getHost(), dc.getPort(), HTTPUtil.REALM);
 
-    private Properties loadProperties(String path) throws IOException {
-        Properties properties = new Properties();
-        properties.load(Thread.currentThread().getContextClassLoader().getResource(path).openStream());
+        client.getCredentialsProvider().setCredentials(as, upc);
+    }
 
-        return properties;
+    private static DefaultHttpClient configureHttpClient(){
+        int timeout = 10; //seconds
+        DefaultHttpClient client = new DefaultHttpClient();
+        HttpParams params = client.getParams();
+        HttpConnectionParams.setConnectionTimeout(params, timeout * 1000); // http.connection.timeout
+        HttpConnectionParams.setSoTimeout(params, timeout * 1000); // http.socket.timeout
+
+
+        return client;
+    }
+
+    private static StringBuilder generateJBossURL(DC dc, CLI cli) {
+        StringBuilder url = new StringBuilder("http://"+dc.getHost()+":"+dc.getPort()+"/"+"management"+ cli.getUrl());
+        url.append("?recursive=").
+            append(cli.isRecursive()).
+            append("&include-runtime=").
+            append(cli.isRuntime());
+        return url;
     }
 
 }
