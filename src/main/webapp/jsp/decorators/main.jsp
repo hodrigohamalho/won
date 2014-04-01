@@ -2,7 +2,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html>
+<html ng-app>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title><decorator:title default="Wildfly Operations Network"/></title>
@@ -10,27 +10,23 @@
     <!-- VENDORS CSS -->
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/vendor/bootstrap.css"/>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/vendor/bootstrap-theme.css"/>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/vendor/jquery.qtip.min.css"/>
 
     <!-- CUSTOM -->
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/application.css"/>
 
     <!-- VENDORS JAVASCRIPT -->
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/vendor/angular.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/vendor/jquery.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/vendor/bootstrap.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/vendor/docs.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/vendor/handlebars-v1.3.0.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/vendor/jquery.defaultvalue.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/vendor/jquery.searchable-1.0.0.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/vendor/jquery.qtip.min.js"></script>
+
 
     <!-- CUSTOM JAVASCRIPT -->
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/application.js"></script>
-    <script type="text/javascript">var contextPath="${pageContext.request.contextPath}";</script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/controllers/dc/index.js"></script>
     <decorator:head/>
   </head>
 
   <body>
+
       <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
           <div class="container-fluid">
               <div class="navbar-header">
@@ -79,6 +75,7 @@
               </div>
 
               <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                  TESTEEEEEE: {{ 'yet' + '!'}}
                 <div id="alert-holder"></div>
 
                 <decorator:body/>

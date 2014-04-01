@@ -6,7 +6,7 @@
     <div id="alert-holder"></div>
 
     <!-- CUSTOM JAVASCRIPTS -->
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/index.js"></script>
+    <%--<script type="text/javascript" src="${pageContext.request.contextPath}/js/index.js"></script>--%>
 </body>
 
 
