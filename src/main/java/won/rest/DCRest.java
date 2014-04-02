@@ -71,6 +71,8 @@ public class DCRest {
     @GET
     @Produces("application/json")
     public List<DC> list(){
+        System.out.println("TESTE DO PRINTLN!");
+
         try{
             Query query = em.createQuery("SELECT d FROM DC d");
             return (List<DC>) query.getResultList();
