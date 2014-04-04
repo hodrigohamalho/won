@@ -1,6 +1,7 @@
 // This javascript is common to all pages
 
 var loadIcon = "initializing...";
+
 var AlertType = {
   SUCCESS: "success",
   INFO: "info",
@@ -37,9 +38,6 @@ WON = {
     },
 
     message: function(type, message, description){
-        var source = $("#alerts-template").html();
-        var template = Handlebars.compile(source);
-
         var divClass = "";
         var btnIcon = "";
 
@@ -64,7 +62,18 @@ WON = {
             icon: btnIcon
         }
 
-        $("#alert-holder").html(template(msgBuilder));
+        // TODO to_angular_way
+        $("#alert-holder").load(contextPath+"/jsp/partials/_alerts.jsp",function(){
+            var alert = $("#alert");
+            alert.addClass(msgBuilder.divClass);
+            $(alert.find(".icon")).addClass(msgBuilder.icon);
+            $(alert.find("#alert-title")).html(msgBuilder.title);
+            if (msgBuilder.description == null){
+                $(alert.find("#alert-body")).remove();
+            }else{
+                $(alert.find("#alert-description")).html(msgBuilder.description);
+            }
+        });
     },
 
     scrollToElement: function (elementId) {

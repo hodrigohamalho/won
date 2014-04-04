@@ -96,6 +96,6 @@ body {
 }
 
 
-#btn-register-dc{
-    margin-top: 5px;
+.form-button{
+    margin: 10px 10px 0 0;
 }

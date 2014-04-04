@@ -9,8 +9,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,18 +18,13 @@ import java.util.List;
  * @author Rodrigo Ramalho
  *         hodrigohamalho@gmail.com.
  */
-@Path("/dc")
 @Stateless
-public class DCRest {
-
-    private String errorMessage = "";
+public class DCRest implements IDCRest {
 
     @Inject
     private EntityManager em;
 
-    @GET
-    @Path("is-any-registered")
-    @Produces("application/json")
+    @Override
     public Boolean isAnyRegistered(){
         try{
             em.createQuery("select 1 from DC").setMaxResults(1).getSingleResult();
@@ -40,9 +34,7 @@ public class DCRest {
         }
     }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Override
     public Response create(DC dc) {
         try{
             dc.setId(null);
@@ -55,24 +47,19 @@ public class DCRest {
         return success(dc);
     }
 
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Override
     public Response update(DC dc){
         if (dc != null && dc.getId() != null && dc.getId() != -1){
             em.merge(dc);
         }else{
-            return throwError("You need to pass a existing DC as parameter to update");
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
 
         return success(dc);
     }
 
-    @GET
-    @Produces("application/json")
+    @Override
     public List<DC> list(){
-        System.out.println("TESTE DO PRINTLN!");
-
         try{
             Query query = em.createQuery("SELECT d FROM DC d");
             return (List<DC>) query.getResultList();
@@ -81,9 +68,8 @@ public class DCRest {
         }
     }
 
-    @Path("{id}")
-    @GET
-    @Produces("application/json")
+
+    @Override
     public Response find(@PathParam("id") Integer id){
         DC dc;
 
@@ -100,31 +86,31 @@ public class DCRest {
         return success(dc);
     }
 
-    @Path("{id}")
-    @DELETE
+
+    @Override
     public Response destroy(@PathParam("id") Integer id){
         if (id != null){
             DC dc = em.find(DC.class, id);
 
-            if (dc != null){
-                em.remove(dc);
-            }else{
-                return throwError("No results found for id "+id);
-            }
+            if (dc == null)
+                return notFound();
+
+            em.remove(dc);
         }else{
-            return throwError("ID cannot be null");
+            return notFound();
         }
 
         return success();
     }
 
-    @Path("test-connection/{id}")
-    @GET
+    @Override
     public Response testConnection(@PathParam("id") Integer id){
         if (id != null){
             DC dc = em.find(DC.class, id);
 
-            if (dc != null){
+            if (dc == null)
+                return notFound();
+
                 CLI cli = new CLI("", false, false);
 
                 try {
@@ -134,9 +120,6 @@ public class DCRest {
                     e.printStackTrace();
                     return throwError(e.getMessage());
                 }
-            }else{
-                return throwError("No results found for id "+id);
-            }
         }else{
             return throwError("ID cannot be null");
         }
@@ -148,6 +131,10 @@ public class DCRest {
 
     private Response success(Object object){
         return Response.ok().entity(object).build();
+    }
+
+    private Response notFound(){
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 
     private Response throwError(String message) {

@@ -1,12 +1,8 @@
-<script id="alerts-template" type="text/x-handlebars-template">
-
-    <div class="alert {{divClass}}">
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-        <span class="glyphicon {{icon}}"></span> <strong>{{title}}</strong>
-        {{#if description}}
-            <hr class="message-inner-separator">
-            <p>{{description}}</p>
-        {{/if}}
+<div id="alert" class="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <span class="icon glyphicon"></span> <strong id="alert-title"></strong>
+    <div id="alert-body">
+        <hr class="message-inner-separator">
+        <p id="alert-description"></p>
     </div>
-
-</script>
+</div>

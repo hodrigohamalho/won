@@ -29,8 +29,8 @@
                     <td>{{dc.host}}</td>
                     <td>{{dc.port}}</td>
                     <td>{{dc.username}}</td>
-                    <td ng-if="dc.active"><button class="btn btn-info btn-sm">Collecting Metrics!</button></td>
-                    <td ng-if="dc.active == false"><button class="btn btn-danger btn-sm">Not collecting</button></td>
+                    <td ng-if="dc.active == true || dc.active == 'true'"><button class="btn btn-info btn-sm">Collecting Metrics!</button></td>
+                    <td ng-if="dc.active == false || dc.active == 'false'"><button class="btn btn-danger btn-sm">Not collecting</button></td>
                     <td>
                         <button type="button" ng-click="edit(dc)" class="btn btn-default btn-sm btn-edit" title="Edit">
                             <span class="glyphicon glyphicon-pencil"></span>
@@ -38,7 +38,7 @@
                         <button type="button" ng-click="remove(dc)" class="btn btn-default btn-sm btn-remove" title="Remove it!">
                             <span class="glyphicon glyphicon-remove"></span>
                         </button>
-                        <button type="button" class="btn btn-default btn-sm btn-test-connection"
+                        <button type="button" ng-click="testConnection(dc.id)" class="btn btn-default btn-sm btn-test-connection"
                                 title="Test connection with Domain Controller">
                             <span class="glyphicon glyphicon-transfer"></span>
                         </button>
@@ -70,7 +70,8 @@
                 <option value="false">NO.</option>
             </select>
 
-            <button type="submit" class="btn btn-primary pull-right" ng-click="save()">Save it!</button>
+            <button type="submit" class="btn btn-primary pull-right form-button" ng-click="save()">Save it!</button>
+            <button type="button" class="btn btn-primary pull-right form-button" ng-click="reset()">Reset!</button>
         </form>
     </div>
 </div>

@@ -1,5 +1,7 @@
 function DomainCtrl($scope, $window, $http){
 
+    var DCURL = contextPath + "/rest/dc/";
+
     var
         $ = jQuery,
         ng = $scope,
@@ -9,18 +11,22 @@ function DomainCtrl($scope, $window, $http){
 
 
     ng.save = function(){
-        debugger;
         if(ng.dc.id > -1){
             $.ajax({
                 type: 'PUT',
-                url: '/won/rest/dc',
+                url: DCURL,
                 data: JSON.stringify(ng.dc),
-                contentType: "application/json"
-            });
+                contentType: "application/json",
+                success: function(){
+                    WON.message(AlertType.SUCCESS, "DC updated!", null);
+                }
+            });;
 
+            reset();
         } else {
-            aj.post('/won/rest/dc', ng.dc).success(function(data){
+            aj.post(DCURL, ng.dc).success(function(data){
                 ng.dcs.unshift(data);
+                WON.message(AlertType.SUCCESS, "DC included!", null);
                 reset();
             });
         }
@@ -28,17 +34,34 @@ function DomainCtrl($scope, $window, $http){
 
     ng.edit = function(dc){
         ng.dc = dc;
+        WON.scrollToElement("#form-dc");
     };
 
     ng.remove = function(dc){
         var confirm = wi.confirm('Tem certeza que deseja excluir o produto '+ dc.host+ '?');
         if(confirm){
-            aj.delete('/won/rest/dc/'+dc.id).success(function(data){
+            aj.delete(DCURL+dc.id).success(function(data){
                 var index = ng.dcs.indexOf(dc);
                 ng.dcs.splice(index, 1);
+                WON.message(AlertType.SUCCESS, "DC removed!", null);
             });
         }
     };
+
+    ng.testConnection = function(id){
+        $http.get(DCURL+"test-connection/"+id).success(function(isConnectionWorking){
+            isConnectionWorking = WON.stringToBoolean(isConnectionWorking);
+            if (isConnectionWorking){
+                WON.message(AlertType.SUCCESS, "Connection working!", null);
+            }else{
+                WON.message(AlertType.DANGER, "Connection not established :/ ", null);
+            }
+        });
+    }
+
+    ng.reset = function(){
+        reset();
+    }
 
     var updateSideMenu = function(){
         $("#dc-nav").addClass("active");
@@ -46,10 +69,11 @@ function DomainCtrl($scope, $window, $http){
 
     var reset = function(){
         ng.dc = {id:-1, host:'', port:'', username: '', password:'', active: false};
+        ng.message = {divClass: '', icon: '', title: '', description: ''};
     };
 
     var init = function(){
-        $http.get("/won/rest/dc/").success(function(data){
+        $http.get(DCURL).success(function(data){
             $scope.dcs = data;
         });
 
@@ -65,7 +89,7 @@ function DomainCtrl($scope, $window, $http){
 //// If you are new in project, start reading the last section of this file
 //// it'll help you for understand the main functions used in this file
 //var searchableSingleton = 0;
-//var DCURL = contextPath + "/rest/dc/";
+//
 //var form = $("#form-dc");
 //
 //DC = {

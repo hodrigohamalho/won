@@ -6,6 +6,7 @@
     a undecorated page, create a dir and put the pattern bellow
     -->
     <decorator name="none">
+        <pattern>/jsp/partials/*</pattern>
         <pattern>/jsp/dc/partials/*</pattern>
     </decorator>
 

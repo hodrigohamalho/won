@@ -1,6 +1,8 @@
 package won.model;
 
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -13,6 +15,7 @@ import java.io.Serializable;
  *         Class with all data necessary to stablish a connection with Domain Controller.
  */
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DC implements Serializable{
 
     public DC() {}

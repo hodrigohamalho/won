@@ -18,7 +18,8 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/vendor/angular.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/vendor/jquery.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/vendor/bootstrap.js"></script>
-
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/application.js"></script>
+    <script type="text/javascript">var contextPath="${pageContext.request.contextPath}";</script>
 
     <!-- CUSTOM JAVASCRIPT -->
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/controllers/dc/index.js"></script>
@@ -75,7 +76,6 @@
               </div>
 
               <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-                  TESTEEEEEE: {{ 'yet' + '!'}}
                 <div id="alert-holder"></div>
 
                 <decorator:body/>
@@ -83,7 +83,5 @@
 
           </div>
       </div>
-
-      <jsp:include page="/jsp/partials/_alerts.jsp"></jsp:include>
   </body>
 </html>
