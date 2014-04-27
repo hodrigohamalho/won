@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.json.JSONObject;
 import won.model.CLI;
 import won.model.DC;
 
@@ -28,8 +29,9 @@ public class HTTPUtil {
     public final static String REALM = "ManagementRealm";
 
     // TODO ok, ok. This method name is not the best thing to see. lol
-    public static String retrieveJSONFromDC(DC dc, CLI cli) throws IOException {
-        String json = "";
+    public static JSONObject retrieveJSONFromDC(DC dc, CLI cli) throws IOException {
+        String result;
+        JSONObject json = null;
         String url = generateJBossURL(dc, cli).toString();
 
         DefaultHttpClient client = configureHttpClient();
@@ -48,9 +50,11 @@ public class HTTPUtil {
             HttpEntity entity = response.getEntity(); // Pull content Stream from server
             inputStream = entity.getContent();
 
-            json = responseContent(inputStream);
-        }catch (IOException io){
-            io.printStackTrace();
+            result = responseContent(inputStream);
+            if (result != null && !result.isEmpty())
+                json = new JSONObject(result);
+        }catch (Exception e){
+            e.printStackTrace();
         }finally {
             if (inputStream != null)
                 inputStream.close();

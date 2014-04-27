@@ -1,5 +1,6 @@
 package won.rest;
 
+import org.json.JSONObject;
 import won.model.CLI;
 import won.model.DC;
 import won.util.HTTPUtil;
@@ -114,8 +115,8 @@ public class DCRest implements IDCRest {
                 CLI cli = new CLI("", false, false);
 
                 try {
-                    String json = HTTPUtil.retrieveJSONFromDC(dc, cli);
-                    return json != "" ? success(true) : success(false);
+                    JSONObject json = HTTPUtil.retrieveJSONFromDC(dc, cli);
+                    return (json != null && !json.toString().isEmpty()) ? success(true) : success(false);
                 } catch (Exception e) {
                     e.printStackTrace();
                     return throwError(e.getMessage());

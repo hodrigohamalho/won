@@ -4,7 +4,6 @@ package won.model;
  * @author Rodrigo Ramalho
  *         hodrigohamalho@gmail.com.
  *
- *         It's a non-persistent object.
  */
 public class CLI {
 
