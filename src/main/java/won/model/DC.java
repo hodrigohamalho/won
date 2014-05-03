@@ -1,12 +1,15 @@
 package won.model;
 
 
+import com.sun.tools.javac.util.List;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * @author Rodrigo Ramalho
@@ -18,7 +21,9 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DC implements Serializable{
 
-    public DC() {}
+    public DC() {
+        groups = new ArrayList<Group>();
+    }
 
     public DC(Integer id, String host, Integer port, String username, String password, Boolean active) {
         this.id = id;
@@ -27,6 +32,7 @@ public class DC implements Serializable{
         this.username = username;
         this.password = password;
         this.active = active;
+        groups = new ArrayList<Group>();
     }
 
     @Id
@@ -38,6 +44,9 @@ public class DC implements Serializable{
     private String username;
     private String password;
     private Boolean active;
+
+    @Transient
+    private List<Group> groups;
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
@@ -73,6 +82,9 @@ public class DC implements Serializable{
     public Boolean getActive() { return active; }
     public void setActive(Boolean active) { this.active = active; }
 
+    public List<Group> getGroups() { return groups; }
+    public void setGroups(List<Group> groups) { this.groups = groups;}
+
     @Override
     public String toString() {
         return "DC{" +
@@ -84,4 +96,6 @@ public class DC implements Serializable{
                 ", active=" + active +
                 '}';
     }
+
+
 }
