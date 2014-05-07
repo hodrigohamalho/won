@@ -1,0 +1,15 @@
+.STARTED, .true{
+    color: #fff !important;;
+    background-color: #428bca !important;;
+    border-color: #357ebd !important;;
+}
+
+.STOPPED, .DISABLED, .false{
+    color: #fff !important;
+    background-color: #d9534f !important;;
+    border-color: #d43f3a !important;;
+}
+
+.server {
+    margin: 10px;
+}

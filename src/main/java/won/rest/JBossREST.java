@@ -1,10 +1,10 @@
 package won.rest;
 
-import org.apache.commons.collections.ListUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import won.model.*;
+import won.model.CLI;
+import won.model.DC;
 import won.util.CommonUtils;
 import won.util.HTTPUtil;
 
@@ -13,9 +13,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Rodrigo Ramalho
@@ -38,51 +36,48 @@ public class JBossREST implements IJBossREST{
     }
 
     @Override
-    public List<DC> teste(){
-        List<Group> groups = new ArrayList<Group>();
+    public String resumeJbossInfo(){
         List<DC> dcs = activeDCS();
+        JSONObject dcsJson = new JSONObject();
 
         // for each DC retrieve DC data
         for (DC dc : dcs) {
             try {
-                JSONObject rootLevel = HTTPUtil.retrieveJSONFromDC(dc, new CLI("", false, false));
+                JSONObject resume = new JSONObject();
+                JSONObject hostsJson = new JSONObject();
 
+                JSONObject rootLevel = HTTPUtil.retrieveJSONFromDC(dc, new CLI("", false, false));
                 List<String> hostNames = hostsNames(rootLevel);
+
                 if (CommonUtils.isNotEmpty(hostNames)) {
 
                     // for each host retrieve host information.
                     for (String hostName : hostNames) {
-                        HC hc = new HC();
-                        hc.setName(hostName);
-
                         JSONObject hostLevel = HTTPUtil.retrieveJSONFromDC(dc, new CLI("/host/" + hostName, true, true));
-
-                        JSONObject serverConfig = new JSONObject(hostLevel.get("server-config").toString());
-                        List<String> serverNames = jsonArrayToList(serverConfig.names());
-
-                        // for each server retrieve server information
-                        for (String serverName : serverNames) {
-                            if (CommonUtils.isNotEmpty(serverNames)) {
-                                JSONObject serverJson = new JSONObject(serverConfig.get(serverName).toString());
-                                Server server = new Server();
-                                server.setName(serverJson.get("name").toString());
-                                server.setStatus(serverJson.get("status").toString());
-                            }
-                        }
-
+                        hostsJson.put(hostName, hostLevel);
                     }
+
+                    resume.put("hosts", hostsJson);
                 }
 
+                dcsJson.put(rootLevel.get("name").toString(), resume);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        return "oi";
+        return dcsJson.toString();
     }
 
     private List<String> hostsNames(JSONObject rootLevel) throws JSONException {
-        return jsonArrayToList(rootLevel.getJSONObject("host").names());;
+        return jsonArrayToList(rootLevel.getJSONObject("host").names());
+    }
+
+    private JSONObject wrapJson(JSONObject json, String name) throws JSONException {
+        JSONObject wrap = new JSONObject();
+        wrap.put(name, json);
+
+        return wrap;
     }
 
 

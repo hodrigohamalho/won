@@ -57,7 +57,7 @@ function DomainCtrl($scope, $window, $http){
                 WON.message(AlertType.DANGER, "Connection not established :/ ", null);
             }
         });
-    }
+    };
 
     ng.reset = function(){
         reset();

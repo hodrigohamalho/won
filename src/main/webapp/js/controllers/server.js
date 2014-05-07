@@ -1,4 +1,4 @@
-function IndexCtrl($scope, $window, $http){
+function ServerCtrl($scope, $window, $http){
 
     var JBOSSURL = contextPath + "/rest/jboss/";
     var DCURL = contextPath + "/rest/dc/";

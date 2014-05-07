@@ -10,13 +10,11 @@ import javax.ws.rs.core.MediaType;
  * @author Rodrigo Ramalho
  *         hodrigohamalho@gmail.com.
  */
-@Path("/jboss")
+@Path("/server")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface IJBossREST {
+public interface IServer {
 
-    @Path("/resume-jboss-info")
     @GET
-    public String resumeJbossInfo();
-
+    public String serverInfo();
 }

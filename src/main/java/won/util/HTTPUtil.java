@@ -13,6 +13,7 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONObject;
 import won.model.CLI;
 import won.model.DC;
+import won.exceptions.OutComeFailed;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,8 +52,12 @@ public class HTTPUtil {
             inputStream = entity.getContent();
 
             result = responseContent(inputStream);
-            if (result != null && !result.isEmpty())
+            if (result != null && !result.isEmpty()) {
                 json = new JSONObject(result);
+
+                if (json.has("outcome") && json.get("outcome") == "failed")
+                    throw new OutComeFailed(json.get("failure-description").toString());
+            }
         }catch (Exception e){
             e.printStackTrace();
         }finally {

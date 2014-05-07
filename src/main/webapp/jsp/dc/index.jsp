@@ -76,4 +76,4 @@
     </div>
 </div>
 
-<script type="text/javascript" src="${pageContext.request.contextPath}/js/dc.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/controllers/dc.js"></script>

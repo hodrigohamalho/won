@@ -22,7 +22,6 @@
     <script type="text/javascript">var contextPath="${pageContext.request.contextPath}";</script>
 
     <!-- CUSTOM JAVASCRIPT -->
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/controllers/dc/index.js"></script>
     <decorator:head/>
   </head>
 

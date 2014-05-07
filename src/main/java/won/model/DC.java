@@ -1,7 +1,6 @@
 package won.model;
 
 
-import com.sun.tools.javac.util.List;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import javax.persistence.Entity;
@@ -9,7 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Rodrigo Ramalho
@@ -21,9 +20,7 @@ import java.util.ArrayList;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DC implements Serializable{
 
-    public DC() {
-        groups = new ArrayList<Group>();
-    }
+    public DC() {}
 
     public DC(Integer id, String host, Integer port, String username, String password, Boolean active) {
         this.id = id;
@@ -32,7 +29,6 @@ public class DC implements Serializable{
         this.username = username;
         this.password = password;
         this.active = active;
-        groups = new ArrayList<Group>();
     }
 
     @Id
