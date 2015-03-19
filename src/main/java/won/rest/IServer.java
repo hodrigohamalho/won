@@ -16,5 +16,5 @@ import javax.ws.rs.core.MediaType;
 public interface IServer {
 
     @GET
-    public String serverInfo();
+    public String serverInfo(String dc, String hc, String server);
 }
