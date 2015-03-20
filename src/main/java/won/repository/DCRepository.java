@@ -16,7 +16,16 @@ public class DCRepository {
 
 	@Inject
 	private EntityManager em;
-
+	
+	public List<DC> activeDCS(){
+        try{
+            Query query = em.createQuery("SELECT d FROM DC d where d.active = true");
+            return (List<DC>) query.getResultList();
+        }catch(NullPointerException nre){
+            return new ArrayList<DC>();
+        }
+    }
+	
 	public boolean isAnyRegistered(){
 		try{
 			em.createQuery("select 1 from DC").setMaxResults(1).getSingleResult();
@@ -26,13 +35,9 @@ public class DCRepository {
 		}
 	}
 
-	public void save(DC dc){
-		if (dc != null && dc.getId() != null && dc.getId() != -1){
-			em.merge(dc);
-		}else{
-			dc.setId(null);
-			em.persist(dc);
-		}
+	public void save(DC dc) throws Exception{
+		em.persist(dc);
+		findAll();
 	}
 	
 	@SuppressWarnings("unchecked")

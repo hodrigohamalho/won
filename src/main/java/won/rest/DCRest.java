@@ -2,7 +2,10 @@ package won.rest;
 
 import java.util.List;
 
+import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -26,12 +29,15 @@ import won.util.HTTPUtil;
  *         hodrigohamalho@gmail.com.
  */
 @Path("/dc")
+@Stateless
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class DCRest{
+public class DCRest {
 	
 	@Inject
 	private DCRepository repository;
+	@Inject
+	private EntityManager em;
 
     @GET
     @Path("is-any-registered")
@@ -54,7 +60,12 @@ public class DCRest{
     @PUT
     @Path("/{id:[0-9][0-9]*}")
     public Response update(@PathParam("id") Integer id, DC dc){
-    	repository.save(dc);
+    	try {
+			repository.save(dc);
+		} catch (Exception e) {
+			e.printStackTrace();
+            return throwError(e.getMessage());
+		}
     	return success(dc);
     }
 

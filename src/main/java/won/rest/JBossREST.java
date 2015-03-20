@@ -1,43 +1,42 @@
 package won.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import won.model.CLI;
 import won.model.DC;
+import won.repository.DCRepository;
 import won.util.CommonUtils;
 import won.util.HTTPUtil;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Rodrigo Ramalho
  *         hodrigohamalho@gmail.com.
  */
 
-@Stateless
-public class JBossREST implements IJBossREST{
+@Path("/jboss")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class JBossREST {
 
     @Inject
-    private EntityManager em;
-
-    public List<DC> activeDCS(){
-        try{
-            Query query = em.createQuery("SELECT d FROM DC d where d.active = true");
-            return (List<DC>) query.getResultList();
-        }catch(NullPointerException nre){
-            return new ArrayList<DC>();
-        }
-    }
-
-    @Override
+    private DCRepository dcRepository;
+    
+    @GET
+    @Path("/resume")
     public String resumeJbossInfo(){
-        List<DC> dcs = activeDCS();
+        List<DC> dcs = dcRepository.activeDCS();
         JSONObject dcsJson = new JSONObject();
 
         // for each DC retrieve DC data

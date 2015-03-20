@@ -1,12 +1,18 @@
-app.controller('MainCtrl', function($scope) {
+app.controller('MainCtrl', function($scope, jbossService) {
 	this.projectBoldName = 'CLI ';
 	this.projectName = 'Crawler';
 	this.userName = 'Rodrigo Ramalho';
 	this.headerText = 'JBoss Monitor Project';
 	this.descriptionText = 'This project is a kind of JBoss CLI Crawler';
-
+	
+	$scope.resume = function(){
+		jbossService.resume(function(data){
+			$scope.dcs = data;
+		});
+	};
+	
+	$scope.resume();
 });
-
 
 app.controller('DomainCtrl', function($scope, dcService) {
 
