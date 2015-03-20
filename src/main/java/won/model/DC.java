@@ -1,14 +1,16 @@
 package won.model;
 
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
-import java.io.Serializable;
-import java.util.List;
+import javax.validation.constraints.NotNull;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 /**
  * @author Rodrigo Ramalho
@@ -35,10 +37,15 @@ public class DC implements Serializable{
     @GeneratedValue
     private Integer id;
 
+    @NotNull
     private String host;
+    @NotNull
     private Integer port;
+    @NotNull
     private String username;
+    @NotNull
     private String password;
+    @NotNull
     private Boolean active;
 
     @Transient

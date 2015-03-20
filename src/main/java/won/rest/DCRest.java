@@ -1,85 +1,76 @@
 package won.rest;
 
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.json.JSONObject;
+
 import won.model.CLI;
 import won.model.DC;
+import won.repository.DCRepository;
 import won.util.HTTPUtil;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Rodrigo Ramalho
  *         hodrigohamalho@gmail.com.
  */
-@Stateless
-public class DCRest implements IDCRest {
+@Path("/dc")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class DCRest{
+	
+	@Inject
+	private DCRepository repository;
 
-    @Inject
-    private EntityManager em;
-
-    @Override
+    @GET
+    @Path("is-any-registered")
     public Boolean isAnyRegistered(){
-        try{
-            em.createQuery("select 1 from DC").setMaxResults(1).getSingleResult();
-            return true;
-        }catch(NoResultException nre){
-            return false;
-        }
+       return repository.isAnyRegistered();
     }
 
-    @Override
+    @POST
     public Response create(DC dc) {
-        try{
-            dc.setId(null);
-            em.persist(dc);
-        }catch (Exception e){
+    	try{
+    		repository.save(dc);
+    	}catch(Exception e){
             e.printStackTrace();
             return throwError(e.getMessage());
         }
-
+    	
         return success(dc);
     }
 
-    @Override
-    public Response update(DC dc){
-        if (dc != null && dc.getId() != null && dc.getId() != -1){
-            em.merge(dc);
-        }else{
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        return success(dc);
+    @PUT
+    @Path("/{id:[0-9][0-9]*}")
+    public Response update(@PathParam("id") Integer id, DC dc){
+    	repository.save(dc);
+    	return success(dc);
     }
 
-    @Override
+    @GET
     public List<DC> list(){
-        try{
-            Query query = em.createQuery("SELECT d FROM DC d");
-            return (List<DC>) query.getResultList();
-        }catch(NullPointerException nre){
-            return new ArrayList<DC>();
-        }
+    	return repository.findAll();
     }
 
 
-    @Override
+    @GET
+    @Path("/{id:[0-9][0-9]*}")
     public Response find(@PathParam("id") Integer id){
         DC dc;
 
         if (id != null){
-            try{
-               dc = em.find(DC.class, id);
-            }catch (Exception e){
-                return throwError(e.getMessage());
-            }
+               dc = repository.find(id);
         }else{
             return throwError("ID cannot be null");
         }
@@ -88,15 +79,11 @@ public class DCRest implements IDCRest {
     }
 
 
-    @Override
+    @DELETE
+    @Path("/{id:[0-9][0-9]*}")
     public Response destroy(@PathParam("id") Integer id){
         if (id != null){
-            DC dc = em.find(DC.class, id);
-
-            if (dc == null)
-                return notFound();
-
-            em.remove(dc);
+            repository.remove(id);
         }else{
             return notFound();
         }
@@ -104,10 +91,11 @@ public class DCRest implements IDCRest {
         return success();
     }
 
-    @Override
+    @GET
+    @Path("test-connection/{id:[0-9][0-9]*}")
     public Response testConnection(@PathParam("id") Integer id){
         if (id != null){
-            DC dc = em.find(DC.class, id);
+            DC dc = repository.find(id);
 
             if (dc == null)
                 return notFound();

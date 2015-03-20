@@ -10,10 +10,19 @@ app.controller('MainCtrl', function($scope) {
 
 app.controller('DomainCtrl', function($scope, dcService) {
 
-	$scope.showForm = false;
+	$scope.formCtrl = false;
 
-	var reset = function(){
-		$scope.dc = {id:-1, host:'', port:'', username: '', password:'', active: false};
+	$scope.showForm = function(){
+		$scope.formCtrl = true
+	};
+	
+	$scope.hideForm = function(){
+		$scope.formCtrl = false;
+	}
+	
+	$scope.reset = function(){
+		$scope.dc = {id: null, host:'', port:'', username: '', password:'', active: false};
+		$scope.hideForm();
 	};
 	
 	var scrollToElement = function (elementId) {
@@ -27,14 +36,14 @@ app.controller('DomainCtrl', function($scope, dcService) {
 	}
 
 	$scope.save = function(){
-		if($scope.dc.id > -1){
+		if($scope.dc.id != null){
 			dcService.update($scope.dc, function(){
-				reset();
+				$scope.reset();
 				$scope.list();
 			});
 		} else {
 			dcService.save($scope.dc, function(){
-				reset();
+				$scope.reset();
 				$scope.list();
 			});
 		}
@@ -43,6 +52,7 @@ app.controller('DomainCtrl', function($scope, dcService) {
 	$scope.edit = function(dc){
 		$scope.dc = dc;
 		scrollToElement("#form-dc");
+		$scope.showForm();
 	};
 
 	$scope.remove = function(dc){
@@ -66,7 +76,6 @@ app.controller('DomainCtrl', function($scope, dcService) {
 	};
 
 	$scope.list();
-
 });
 
 
