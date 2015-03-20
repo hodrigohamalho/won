@@ -11,6 +11,11 @@ function config($stateProvider, $urlRouterProvider) {
             url: "/pages",
             templateUrl: "views/common.html",
         })
+        .state('domain_controller', {
+            url: "/domain-controller",
+            templateUrl: "views/domain-controller.html",
+            data: { pageTitle: 'Domain Controller' }
+        })
         .state('pages.blank_page', {
             url: "/blank_page",
             templateUrl: "views/blank-page.html",
