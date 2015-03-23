@@ -14,6 +14,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.gwt.dev.json.JsonObject;
+
 import won.model.CLI;
 import won.model.DC;
 import won.repository.DCRepository;
@@ -38,6 +40,7 @@ public class JBossREST {
     public String resumeJbossInfo(){
         List<DC> dcs = dcRepository.activeDCS();
         JSONObject dcsJson = new JSONObject();
+        JSONArray array = null;
 
         // for each DC retrieve DC data
         for (DC dc : dcs) {
@@ -45,21 +48,32 @@ public class JBossREST {
                 JSONObject resume = new JSONObject();
                 JSONObject hostsJson = new JSONObject();
 
-                JSONObject rootLevel = HTTPUtil.retrieveJSONFromDC(dc, new CLI("", false, false));
-                List<String> hostNames = hostsNames(rootLevel);
+                String rootLevel = HTTPUtil.retrieveJSONFromDC(dc, new CLI("", false, false));
+                List<String> hostNames = hostsNames(new JSONObject(rootLevel));
 
                 if (CommonUtils.isNotEmpty(hostNames)) {
 
                     // for each host retrieve host information.
                     for (String hostName : hostNames) {
-                        JSONObject hostLevel = HTTPUtil.retrieveJSONFromDC(dc, new CLI("/host/" + hostName, true, true));
-                        hostsJson.put(hostName, hostLevel);
+                    	String url = "/host/" + hostName + "/server-config/*";
+                        String jsonString = HTTPUtil.retrieveJSONFromDC(dc, new CLI(url, false, true));
+                        
+                        if (jsonString.startsWith("[") && jsonString.endsWith("]"))
+                        	array = new JSONArray(jsonString);
+                        
+                        List<JSONObject> listHostConfig = new ArrayList<JSONObject>();
+                        for (int i=0; i < array.length(); i++){
+                        	listHostConfig.add(new JSONObject(new JSONObject(array.get(i)).get("result").toString()));
+                        }
+                        
+                        hostsJson.put(hostName, listHostConfig);
+                        System.out.println(array);
                     }
 
                     resume.put("hosts", hostsJson);
                 }
 
-                dcsJson.put(rootLevel.get("name").toString(), resume);
+//                dcsJson.put(rootLevel.get("name").toString(), resume);
             } catch (Exception e) {
                 e.printStackTrace();
             }

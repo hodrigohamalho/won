@@ -30,9 +30,8 @@ public class HTTPUtil {
     public final static String REALM = "ManagementRealm";
 
     // TODO ok, ok. This method name is not the best thing to see. lol
-    public static JSONObject retrieveJSONFromDC(DC dc, CLI cli) throws IOException {
-        String result;
-        JSONObject json = null;
+    public static String retrieveJSONFromDC(DC dc, CLI cli) throws IOException {
+        String result = null;
         String url = generateJBossURL(dc, cli).toString();
 
         DefaultHttpClient client = configureHttpClient();
@@ -52,20 +51,19 @@ public class HTTPUtil {
             inputStream = entity.getContent();
 
             result = responseContent(inputStream);
-            if (result != null && !result.isEmpty()) {
-                json = new JSONObject(result);
+//                json = new JSONObject(result);
 
-                if (json.has("outcome") && json.get("outcome") == "failed")
-                    throw new OutComeFailed(json.get("failure-description").toString());
-            }
+//                if (json.has("outcome") && json.get("outcome") == "failed")
+//                    throw new OutComeFailed(json.get("failure-description").toString());
+//            }
         }catch (Exception e){
             e.printStackTrace();
         }finally {
             if (inputStream != null)
                 inputStream.close();
         }
-
-        return json;
+        
+        return result;
     }
 
     private static String responseContent(InputStream inputStream) throws IOException {

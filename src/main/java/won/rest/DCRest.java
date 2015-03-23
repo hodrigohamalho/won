@@ -114,7 +114,8 @@ public class DCRest {
                 CLI cli = new CLI("", false, false);
 
                 try {
-                    JSONObject json = HTTPUtil.retrieveJSONFromDC(dc, cli);
+                	String jsonString = HTTPUtil.retrieveJSONFromDC(dc, cli);
+                    JSONObject json = new JSONObject(jsonString);
                     return (json != null && !json.toString().isEmpty()) ? success(true) : success(false);
                 } catch (Exception e) {
                     e.printStackTrace();
