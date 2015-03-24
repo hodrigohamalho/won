@@ -8,13 +8,12 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.google.gwt.dev.json.JsonObject;
 
 import won.model.CLI;
 import won.model.DC;
@@ -32,79 +31,98 @@ import won.util.HTTPUtil;
 @Consumes(MediaType.APPLICATION_JSON)
 public class JBossREST {
 
-    @Inject
-    private DCRepository dcRepository;
-    
-    @GET
-    @Path("/resume")
-    public String resumeJbossInfo(){
-        List<DC> dcs = dcRepository.activeDCS();
-        JSONObject dcsJson = new JSONObject();
-        JSONArray array = null;
+	@Inject
+	private DCRepository dcRepository;
 
-        // for each DC retrieve DC data
-        for (DC dc : dcs) {
-            try {
-                JSONObject resume = new JSONObject();
-                JSONObject hostsJson = new JSONObject();
+	/**
+	 * Return a list of all DCS with they respective servers
+	 * @return
+	 */
+	@GET
+	@Path("/servers")
+	public String servers(@QueryParam("dc") Integer dcId, @QueryParam("by") String type){
+		if (dcId == null)
+			throw new IllegalArgumentException("dc parameter is mandatory");
 
-                String rootLevel = HTTPUtil.retrieveJSONFromDC(dc, new CLI("", false, false));
-                List<String> hostNames = hostsNames(new JSONObject(rootLevel));
+		DC dc = dcRepository.find(dcId);
+		if (dc == null)
+			throw new IllegalArgumentException("dc not found");
+		
+		JSONObject serversByGroup = new JSONObject();;
+		String servers = "";
 
-                if (CommonUtils.isNotEmpty(hostNames)) {
+		// for each DC retrieve DC data
+		try {
+			JSONObject hostsJson = new JSONObject();
 
-                    // for each host retrieve host information.
-                    for (String hostName : hostNames) {
-                    	String url = "/host/" + hostName + "/server-config/*";
-                        String jsonString = HTTPUtil.retrieveJSONFromDC(dc, new CLI(url, false, true));
-                        
-                        if (jsonString.startsWith("[") && jsonString.endsWith("]"))
-                        	array = new JSONArray(jsonString);
-                        
-                        List<JSONObject> listHostConfig = new ArrayList<JSONObject>();
-                        for (int i=0; i < array.length(); i++){
-                        	listHostConfig.add(new JSONObject(new JSONObject(array.get(i)).get("result").toString()));
-                        }
-                        
-                        hostsJson.put(hostName, listHostConfig);
-                        System.out.println(array);
-                    }
+			String rootLevel = HTTPUtil.retrieveJSONFromDC(dc, new CLI("", false, false));
+			List<String> hostNames = hostsNames(new JSONObject(rootLevel));
 
-                    resume.put("hosts", hostsJson);
-                }
+			if (CommonUtils.isNotEmpty(hostNames)) {
 
-//                dcsJson.put(rootLevel.get("name").toString(), resume);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+				// for each host retrieve host information.
+				for (String hostName : hostNames) {
+					JSONArray array = null;
+					String url = "/host/" + hostName + "/server-config/*";
+					String jsonString = HTTPUtil.retrieveJSONFromDC(dc, new CLI(url, false, true));
 
-        return dcsJson.toString();
-    }
+					if (jsonString.startsWith("[") && jsonString.endsWith("]"))
+						array = new JSONArray(jsonString);
 
-    private List<String> hostsNames(JSONObject rootLevel) throws JSONException {
-        return jsonArrayToList(rootLevel.getJSONObject("host").names());
-    }
+					for (int i=0; i < array.length(); i++){
+						JSONArray addresses = new JSONArray(new JSONObject(array.get(i).toString()).get("address").toString());
+						String serverName = new JSONObject(addresses.get(1).toString()).getString("server-config");
+						JSONObject serverConfigValue = new JSONObject(new JSONObject(array.get(i).toString()).get("result").toString());
+						serverConfigValue.put("name", serverName);
+						if ("group".equalsIgnoreCase(type)){
+							serversByGroup.accumulate(serverConfigValue.getString("group"), serverConfigValue);
+						}else{
+							hostsJson.accumulate(hostName, serverConfigValue);
+						}
+					}
+				}
 
-    private JSONObject wrapJson(JSONObject json, String name) throws JSONException {
-        JSONObject wrap = new JSONObject();
-        wrap.put(name, json);
+				if ("group".equalsIgnoreCase(type)){
+					servers = serversByGroup.toString();
+				}else{
+					servers = hostsJson.toString();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return servers;
+	}
 
-        return wrap;
-    }
+
+	private List<String> hostsNames(JSONObject rootLevel) throws JSONException {
+		return jsonArrayToList(rootLevel.getJSONObject("host").names());
+	}
+
+	private List<String> serverGroupNames(JSONObject rootLevel) throws JSONException {
+		return jsonArrayToList(rootLevel.getJSONObject("host").names());
+	}
+
+	private JSONObject wrapJson(JSONObject json, String name) throws JSONException {
+		JSONObject wrap = new JSONObject();
+		wrap.put(name, json);
+
+		return wrap;
+	}
 
 
-    private List<String> jsonArrayToList(JSONArray array){
-        List<String> list = new ArrayList<String>();
+	private List<String> jsonArrayToList(JSONArray array){
+		List<String> list = new ArrayList<String>();
 
-        for (int i=0; i<array.length(); i ++){
-            try {
-                list.add(array.get(i).toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+		for (int i=0; i<array.length(); i ++){
+			try {
+				list.add(array.get(i).toString());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
 
-        return list;
-    }
+		return list;
+	}
 }
