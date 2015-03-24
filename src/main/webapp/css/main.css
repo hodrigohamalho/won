@@ -4047,3 +4047,13 @@ label.valid {
   color: #1d2939;
   background-color: #fff;
 }
+
+
+.panel-heading.STARTED {
+	background: rgb(220, 255, 220);
+}
+
+.panel-heading.STOPPED {
+	background: rgb(255, 194, 194);
+}
+

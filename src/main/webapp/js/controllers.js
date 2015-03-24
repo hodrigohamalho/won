@@ -6,8 +6,8 @@ app.controller('MainCtrl', function($scope, jbossService) {
 	this.descriptionText = 'This project is a kind of JBoss CLI Crawler';
 	
 	$scope.resume = function(){
-		jbossService.resume(function(data){
-			$scope.dcs = data;
+		jbossService.serversByGroup(function(data){
+			$scope.servers = data;			
 		});
 	};
 	
@@ -65,7 +65,6 @@ app.controller('DomainCtrl', function($scope, dcService) {
 		var confirm = window.confirm('Tem certeza que deseja excluir o produto '+ dc.host+ '?');
 		if(confirm){
 			dcService.delete({}, {'id': dc.id}, function(){
-				console.log("dc removed!");
 				$scope.list();
 			});
 		}

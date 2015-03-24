@@ -11,18 +11,16 @@
 <section id="main-content">
     <div class="row">
         <div class="col-md-12 col-lg-12">
-           <div ng-repeat="(key, value) in dcs" class="panel panel-default">
+           <div ng-repeat="(key, value) in servers" class="panel panel-default">
 			  <div class="panel-body">
 			  	<div class="panel panel-default">
-			  		<div class="panel-heading">
+			  		<div class="panel-heading {{value[0]['status']}}">
 			  			{{key}}
-              			</div>
-              			<div class="panel-body">
-              				<div ng-repeat="(k, v) in value" class="panel panel-default">
-              					{{k}} - {{v["master"]}}
-              				</div>
-              			</div>
+            		</div>
+              		<div class="panel-body">
+              			
               		</div>
+             	</div>
 			  </div>
 			</div>
         </div>
