@@ -11,14 +11,21 @@
 <section id="main-content">
     <div class="row">
         <div class="col-md-12 col-lg-12">
-           <div ng-repeat="(key, value) in servers" class="panel panel-default">
+           <div ng-repeat="(parentName, parent) in serversParent" class="panel panel-default">
 			  <div class="panel-body">
 			  	<div class="panel panel-default">
-			  		<div class="panel-heading {{value[0]['status']}}">
-			  			{{key}}
+			  		<div class="panel-heading">
+			  			{{parentName}}
             		</div>
               		<div class="panel-body">
-              			
+              			<div ng-repeat="server in parent" class="server panel panel-default col-xs-3">
+	              			<div class="panel-heading {{server.status}}">
+					  			{{server.name}}
+		            		</div>
+		            		<div class="panel-body">
+              					:)
+              				</div>
+              			</div>
               		</div>
              	</div>
 			  </div>

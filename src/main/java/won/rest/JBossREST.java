@@ -74,6 +74,7 @@ public class JBossREST {
 						String serverName = new JSONObject(addresses.get(1).toString()).getString("server-config");
 						JSONObject serverConfigValue = new JSONObject(new JSONObject(array.get(i).toString()).get("result").toString());
 						serverConfigValue.put("name", serverName);
+						serverConfigValue.put("host", hostName);
 						if ("group".equalsIgnoreCase(type)){
 							serversByGroup.accumulate(serverConfigValue.getString("group"), serverConfigValue);
 						}else{
