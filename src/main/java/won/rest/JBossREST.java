@@ -48,7 +48,7 @@ public class JBossREST {
 		if (dc == null)
 			throw new IllegalArgumentException("dc not found");
 		
-		JSONObject serversByGroup = new JSONObject();;
+		JSONObject serversByGroup = new JSONObject();
 		String servers = "";
 
 		// for each DC retrieve DC data
@@ -76,6 +76,7 @@ public class JBossREST {
 						serverConfigValue.put("name", serverName);
 						serverConfigValue.put("host", hostName);
 						if ("group".equalsIgnoreCase(type)){
+							serversByGroup.put(serverConfigValue.getString("group"), wrapJson(serverConfigValue, serverName));
 							serversByGroup.accumulate(serverConfigValue.getString("group"), serverConfigValue);
 						}else{
 							hostsJson.accumulate(hostName, serverConfigValue);
@@ -84,6 +85,20 @@ public class JBossREST {
 				}
 
 				if ("group".equalsIgnoreCase(type)){
+					JSONArray array = null;
+					String url = "/server-group/*";
+					String jsonString = HTTPUtil.retrieveJSONFromDC(dc, new CLI(url, true, false));
+					servers = serversByGroup.toString();
+					if (jsonString.startsWith("[") && jsonString.endsWith("]"))
+						array = new JSONArray(jsonString);
+					
+					for (int i=0; i < array.length(); i++){
+						JSONArray addresses = new JSONArray(new JSONObject(array.get(i).toString()).get("address").toString());
+						String groupName = new JSONObject(addresses.get(0).toString()).getString("server-group");
+						JSONObject serverConfigValue = new JSONObject(new JSONObject(array.get(i).toString()).get("result").toString());
+						serversByGroup.putOnce(groupName, serverConfigValue);
+					}
+					
 					servers = serversByGroup.toString();
 				}else{
 					servers = hostsJson.toString();
@@ -95,7 +110,7 @@ public class JBossREST {
 		
 		return servers;
 	}
-
+	
 
 	private List<String> hostsNames(JSONObject rootLevel) throws JSONException {
 		return jsonArrayToList(rootLevel.getJSONObject("host").names());

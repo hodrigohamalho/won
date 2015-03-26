@@ -8,13 +8,6 @@ app.controller('MainCtrl', function($scope, jbossService) {
 	$scope.resume = function(){
 		jbossService.serversByGroup(function(data){
 			$scope.serversParent = data;	
-			jQuery.each(data, function(i, val) {
-				jQuery.each(val, function(){
-				    console.log(this["name"]);
-				    debugger;
-				});
-			});
-			
 		});
 	};
 	

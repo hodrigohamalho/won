@@ -23,9 +23,13 @@
 					  			{{server.name}}
 		            		</div>
 		            		<div class="panel-body">
-              					:)
+              					
               				</div>
               			</div>
+              		</div>
+              		{{parent[0]}}
+              		<div class="deploys" ng-repeat="deploy in parent[0].deployment">
+              			{{deploy["name"]}}
               		</div>
              	</div>
 			  </div>
