@@ -12,29 +12,28 @@
     <div class="row">
         <div class="col-md-12 col-lg-12">
            <div ng-repeat="(parentName, parent) in serversParent" class="panel panel-default">
-			  <div class="panel-body">
-			  	<div class="panel panel-default">
-			  		<div class="panel-heading">
-			  			{{parentName}}
-            		</div>
-              		<div class="panel-body">
-              			<div ng-repeat="server in parent" class="server panel panel-default col-xs-3">
-	              			<div class="panel-heading {{server.status}}">
-					  			{{server.name}}
-		            		</div>
-		            		<div class="panel-body">
-              					
-              				</div>
-		              		<div class="deploys" ng-init="deploy(server.host, server.name)">
-		              			<div ng-repeat="deploy in deploys">
-		              				
-		              			</div>
-		              		</div>
-              			</div>
+            <div class="panel-body">
+            	<div class="panel panel-default">
+            		<div class="panel-heading">
+                  {{parentName}}
+                 </div>
+              <div class="panel-body">
+              	<div ng-repeat="server in parent" class="server panel panel-default col-xs-3">
+              		<div class="panel-heading {{server.status}}">
+                      {{server.name}}
+              	   </div>
+              	  <div class="panel-body">
+                      Server infos...
               		</div>
-              		
-             	</div>
-			  </div>
+              		<div class="deploys" ng-init="deploy(server)">
+	              		<div ng-repeat="deploy in server.deploys">
+	              			{{deploy.name}} - {{deploy.subsystem.web["active-sessions"]}}
+	              		</div>
+              		</div>
+              	</div>
+              </div>
+              </div>
+            </div>
 			</div>
         </div>
     </div>

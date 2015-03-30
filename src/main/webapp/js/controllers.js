@@ -1,24 +1,24 @@
-app.controller('MainCtrl', function($scope, jbossService) {
+]app.controller('MainCtrl', function($scope, jbossService) {
 	this.projectBoldName = 'CLI ';
 	this.projectName = 'Crawler';
 	this.userName = 'Rodrigo Ramalho';
 	this.headerText = 'JBoss Monitor Project';
 	this.descriptionText = 'This project is a kind of JBoss CLI Crawler';
-	
+
 	$scope.resume = function(){
 		jbossService.serversByGroup(function(data){
-			$scope.serversParent = data;	
+			$scope.serversParent = data;
 		});
 	};
-	
-	$scope.deploy = function(host, server){
-		console.log("host: "+host);
-		console.log("server: "+server);
-		jbossService.deploy({dc: 1, host: host, server: server}, function(response){
-			$scope.deploys = response.toJSON();
+
+	$scope.deploy = function(server){
+		console.log("host: "+server.host);
+		console.log("server: "+server.name);
+		jbossService.deploy({dc: 1, host: server.host, server: server.name}, function(response){
+			server.deploys = response;
 		});
 	}
-	
+
 	$scope.resume();
 });
 
@@ -29,22 +29,22 @@ app.controller('DomainCtrl', function($scope, dcService) {
 	$scope.showForm = function(){
 		$scope.formCtrl = true
 	};
-	
+
 	$scope.hideForm = function(){
 		$scope.formCtrl = false;
 	}
-	
+
 	$scope.reset = function(){
 		$scope.dc = {id: null, host:'', port:'', username: '', password:'', active: false};
 		$scope.hideForm();
 	};
-	
+
 	var scrollToElement = function (elementId) {
 		$('html, body').animate({
 			scrollTop: $(elementId).offset().top
 		}, 2000)
 	};
-	
+
 	$scope.list = function(){
 		$scope.dcs = dcService.query();
 	}
@@ -90,9 +90,3 @@ app.controller('DomainCtrl', function($scope, dcService) {
 
 	$scope.list();
 });
-
-
-
-
-
-
