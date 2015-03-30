@@ -11,6 +11,14 @@ app.controller('MainCtrl', function($scope, jbossService) {
 		});
 	};
 	
+	$scope.deploy = function(host, server){
+		console.log("host: "+host);
+		console.log("server: "+server);
+		jbossService.deploy({dc: 1, host: host, server: server}, function(response){
+			$scope.deploys = response.toJSON();
+		});
+	}
+	
 	$scope.resume();
 });
 
