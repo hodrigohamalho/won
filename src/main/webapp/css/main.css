@@ -4057,6 +4057,14 @@ label.valid {
 	background: rgb(255, 194, 194);
 }
 
+.panel-heading.DISABLED {
+	background: rgb(255, 194, 194);
+}
+
 .server {
 	margin: 5px;
+}
+
+.deploy {
+	padding-bottom: 5px;
 }

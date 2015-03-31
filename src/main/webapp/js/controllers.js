@@ -1,4 +1,4 @@
-]app.controller('MainCtrl', function($scope, jbossService) {
+app.controller('MainCtrl', function($scope, jbossService) {
 	this.projectBoldName = 'CLI ';
 	this.projectName = 'Crawler';
 	this.userName = 'Rodrigo Ramalho';
@@ -12,8 +12,6 @@
 	};
 
 	$scope.deploy = function(server){
-		console.log("host: "+server.host);
-		console.log("server: "+server.name);
 		jbossService.deploy({dc: 1, host: server.host, server: server.name}, function(response){
 			server.deploys = response;
 		});

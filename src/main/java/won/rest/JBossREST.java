@@ -119,7 +119,7 @@ public class JBossREST {
 				JSONObject deployment = new JSONObject(new JSONObject(array.get(i).toString()).get("result").toString());
 				deploymentInfo.put(deployment.getString("name").toString(), deployment);
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 		}
 
 		
