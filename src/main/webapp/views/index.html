@@ -10,20 +10,33 @@
 </div>
 <section id="main-content">
 	<div class="row">
-		<div class="col-md-12 col-lg-12">
-			<div ng-repeat="(parentName, parent) in serversParent" class="panel panel-default">
-				<div class="panel-body">
-					<div class="panel panel-default">
-						<div class="panel-heading">{{parentName}}</div>
-						<div class="panel-body">
-							<div ng-repeat="server in parent" class="server panel panel-default col-xs-3">
-								<div class="panel-heading {{server.status}}">
-									{{server.name}}</div>
-								<div class="panel-body">
-									<div class="deploys" ng-init="deploy(server)">
-										<div ng-repeat="deploy in server.deploys" class="deploy">
+		<div ng-repeat="(parentName, parent) in serversParent">
+			<div class="col-md-6 col-lg-6">
+			
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h3 class="panel-title">{{parentName}}</h3>
+						<div class="actions pull-right">
+	                    	<i data-fullscreen-widget class="fa fa-expand"></i>
+	                        <i data-widget-toggle class="fa fa-chevron-down"></i>
+	                        <i data-widget-close class="fa fa-times"></i>
+	                    </div>
+					</div>
+					
+					<div class="panel-body">
+						<div>
+							<div>Total Sessions: {{parent["active-sessions"]}}</div>
+						</div>
+						
+						<div ng-repeat="server in parent" class="server panel panel-default">
+							<div class="panel-heading {{server.status}}">
+								<h3 class="panel-title">{{server.name}} - {{server.host}}</h3>
+							</div>
+							<div class="panel-body">
+								<div class="deploys" ng-init="deploy(server)">
+									<div ng-repeat="deploy in server.deploys" class="deploy">
+										<div ng-show='deploy.subsystem.web["active-sessions"]' ng-init='sumGroup(parentName, deploy.subsystem.web["active-sessions"])'>
 											{{ deploy.subsystem.web["context-root"] }}
-											<script>console.log('a');</script>
 											<div class="active-sessions">
 												Active sessions: {{ deploy.subsystem.web["active-sessions"] }}
 											</div>
@@ -33,6 +46,7 @@
 							</div>
 						</div>
 					</div>
+					
 				</div>
 			</div>
 		</div>

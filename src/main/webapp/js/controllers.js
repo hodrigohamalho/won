@@ -1,4 +1,4 @@
-app.controller('MainCtrl', function($scope, jbossService) {
+app.controller('MainCtrl', function($scope, $timeout, jbossService) {
 	this.projectBoldName = 'CLI ';
 	this.projectName = 'Crawler';
 	this.userName = 'Rodrigo Ramalho';
@@ -11,11 +11,21 @@ app.controller('MainCtrl', function($scope, jbossService) {
 		});
 	};
 
-	$scope.deploy = function(server){
+	$scope.deploy = function(server, group){
 		jbossService.deploy({dc: 1, host: server.host, server: server.name}, function(response){
 			server.deploys = response;
 		});
-	}
+	};
+	
+	$scope.sumGroup = function(name, activeSession){
+		if (activeSession){
+			if ($scope.serversParent[name]["active-sessions"]){ 
+				$scope.serversParent[name]["active-sessions"] += activeSession;
+			}else{
+				$scope.serversParent[name]["active-sessions"] = activeSession;
+			}
+		}
+	};
 
 	$scope.resume();
 });
