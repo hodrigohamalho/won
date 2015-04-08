@@ -1,25 +1,39 @@
 package won.model;
 
+import java.io.Serializable;
+
 /**
  * @author Rodrigo Ramalho
  *         hodrigohamalho@gmail.com.
  */
-public class Server {
+public class Server implements Serializable{
 
     private String name;
-    private String status;
-
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    private String host;
+    private DC dc;
+    
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getHost() {
+		return host;
+	}
+	public void setHost(String host) {
+		this.host = host;
+	}
+	public DC getDc() {
+		return dc;
+	}
+	public void setDc(DC dc) {
+		this.dc = dc;
+	}
+	@Override
+	public String toString() {
+		return "Server [name=" + name + ", host=" + host + ", dc=" + dc.getId() + "]";
+	}
+	
+	
 }

@@ -17,12 +17,25 @@ app.controller('MainCtrl', function($scope, $timeout, jbossService) {
 		});
 	};
 	
-	$scope.sumGroup = function(name, activeSession){
-		if (activeSession){
-			if ($scope.serversParent[name]["active-sessions"]){ 
-				$scope.serversParent[name]["active-sessions"] += activeSession;
-			}else{
-				$scope.serversParent[name]["active-sessions"] = activeSession;
+	$scope.sumGroup = function(name, deploy){
+		if (deploy.subsystem && deploy.subsystem.web){
+			var activeSession = deploy.subsystem.web["active-sessions"];
+			var deployContext = deploy.subsystem.web["context-root"];
+			
+			if (activeSession && deployContext){
+				if (!$scope.serversParent[name]["deploys"]){
+					$scope.serversParent[name]["deploys"] = {};
+					$scope.serversParent[name]["deploys"][deployContext] = {};
+				}
+				if (!$scope.serversParent[name]["deploys"][deployContext]){
+					$scope.serversParent[name]["deploys"][deployContext] = {};
+				}
+				
+				if ($scope.serversParent[name]["deploys"][deployContext]["active-sessions"]){ 
+					$scope.serversParent[name]["deploys"][deployContext]["active-sessions"] += activeSession;
+				}else{
+					$scope.serversParent[name]["deploys"][deployContext] = { "active-sessions":  activeSession}
+				}
 			}
 		}
 	};

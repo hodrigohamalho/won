@@ -37,8 +37,8 @@ function pageTitle($rootScope, $timeout) {
     return {
         link: function(scope, element) {
             var listener = function(event, toState, toParams, fromState, fromParams) {
-                var title = 'NeuBoard - Responsive Admin Theme';
-                if (toState.data && toState.data.pageTitle) title = 'NeuBoard | ' + toState.data.pageTitle;
+                var title = 'CLI CRAWLER';
+                if (toState.data && toState.data.pageTitle) title = 'CLI CRAWLER | ' + toState.data.pageTitle;
                 $timeout(function() {
                     element.text(title);
                 });

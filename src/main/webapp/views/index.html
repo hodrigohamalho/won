@@ -24,10 +24,11 @@
 					</div>
 					
 					<div class="panel-body">
-						<div>
-							<div>Total Sessions: {{parent["active-sessions"]}}</div>
-						</div>
-						
+						<ul>
+							<li ng-repeat="(name, value) in parent.deploys">
+								<span>{{name}}: {{value["active-sessions"]}} (total active sessions)</span>
+							</li>
+						</ul>
 						<div ng-repeat="server in parent" class="server panel panel-default">
 							<div class="panel-heading {{server.status}}">
 								<h3 class="panel-title">{{server.name}} - {{server.host}}</h3>
@@ -35,7 +36,7 @@
 							<div class="panel-body">
 								<div class="deploys" ng-init="deploy(server)">
 									<div ng-repeat="deploy in server.deploys" class="deploy">
-										<div ng-show='deploy.subsystem.web["active-sessions"]' ng-init='sumGroup(parentName, deploy.subsystem.web["active-sessions"])'>
+										<div ng-show='deploy.subsystem.web["active-sessions"]' ng-init='sumGroup(parentName, deploy)'>
 											{{ deploy.subsystem.web["context-root"] }}
 											<div class="active-sessions">
 												Active sessions: {{ deploy.subsystem.web["active-sessions"] }}

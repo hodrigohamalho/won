@@ -2,13 +2,11 @@ package won.model;
 
 
 import java.io.Serializable;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
@@ -38,7 +36,8 @@ public class DC implements Serializable{
     @GeneratedValue(strategy=GenerationType.SEQUENCE)
     private Integer id;
 
-    @NotNull
+    private String name;
+	@NotNull
     private String host;
     @NotNull
     private Integer port;
@@ -48,9 +47,6 @@ public class DC implements Serializable{
     private String password;
     @NotNull
     private Boolean active;
-
-    @Transient
-    private List<Group> groups;
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
@@ -82,17 +78,21 @@ public class DC implements Serializable{
     public void setPassword(String password) {
         this.password = password;
     }
+    public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 
     public Boolean getActive() { return active; }
     public void setActive(Boolean active) { this.active = active; }
-
-    public List<Group> getGroups() { return groups; }
-    public void setGroups(List<Group> groups) { this.groups = groups;}
 
     @Override
     public String toString() {
         return "DC{" +
                 "id=" + id +
+                ", name='" + name + '\'' +
                 ", host='" + host + '\'' +
                 ", port=" + port +
                 ", username='" + username + '\'' +

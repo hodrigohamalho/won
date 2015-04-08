@@ -1,7 +1,5 @@
 package won.rest;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -13,7 +11,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import won.model.CLI;
@@ -21,6 +18,7 @@ import won.model.DC;
 import won.repository.DCRepository;
 import won.util.CommonUtils;
 import won.util.HTTPUtil;
+import won.util.JSONUtil;
 
 /**
  * @author Rodrigo Ramalho
@@ -57,7 +55,7 @@ public class JBossREST {
 			JSONObject hostsJson = new JSONObject();
 
 			String rootLevel = HTTPUtil.retrieveJSONFromDC(dc, new CLI("", false, false));
-			List<String> hostNames = hostsNames(new JSONObject(rootLevel));
+			List<String> hostNames = JSONUtil.keysFromObject(new JSONObject(rootLevel), "host");
 
 			if (CommonUtils.isNotEmpty(hostNames)) {
 
@@ -124,36 +122,5 @@ public class JBossREST {
 
 		
 		return deploymentInfo.toString();
-	}
-	
-
-	private List<String> hostsNames(JSONObject rootLevel) throws JSONException {
-		return jsonArrayToList(rootLevel.getJSONObject("host").names());
-	}
-
-	private List<String> serverGroupNames(JSONObject rootLevel) throws JSONException {
-		return jsonArrayToList(rootLevel.getJSONObject("host").names());
-	}
-
-	private JSONObject wrapJson(JSONObject json, String name) throws JSONException {
-		JSONObject wrap = new JSONObject();
-		wrap.put(name, json);
-
-		return wrap;
-	}
-
-
-	private List<String> jsonArrayToList(JSONArray array){
-		List<String> list = new ArrayList<String>();
-
-		for (int i=0; i<array.length(); i ++){
-			try {
-				list.add(array.get(i).toString());
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return list;
 	}
 }
