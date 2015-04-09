@@ -1,11 +1,6 @@
 package won.model;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 /**
  * @author Rodrigo Ramalho
@@ -13,29 +8,74 @@ import javax.persistence.ManyToOne;
  *
  */
 @Entity
-public class DatasourceMetrics extends AbstractEntity implements Serializable{
+public class DatasourceMetrics extends AbstractEntity {
 
+	private Integer minPoolSize;
+	private Integer maxPoolSize;
+	private String driverName;
+	private String connectionUrl;
+	private Long inUseCount;
 	private Long activeCount;
-	private Long maxUsedCount;
+	private Long availableCount;
+	private Long averageBlockingTime;
+	private Long averageCreationTime;
 	private Long createdCount;
 	private Long destroyedCount;
-	private Double maxWaitTime;
+	private Long maxCreationTime;
+	private Long maxUsedCount;
+	private Long maxWaitCount;
+	private Long maxWaitTime;
 	private Long timedOut;
-	private Long availableCount;
-	private Double averageBlockingTime;
-	private Double AverageCreationTime;
-	private Date time;
+	private Long totalBlockingTime;
+	private Long totalCreationTime;
 
-	@ManyToOne
-	@JoinColumn(name="datasource_id")
-	private Datasource datasource;
+	public String getConnectionUrl() {
+		return connectionUrl;
+	}
 
+	public void setConnectionUrl(String connectionUrl) {
+		this.connectionUrl = connectionUrl;
+	}
+
+	public String getDriverName() {
+		return driverName;
+	}
+
+	public void setDriverName(String driverName) {
+		this.driverName = driverName;
+	}
+
+	public Integer getMinPoolSize() {
+		if (minPoolSize == null){
+			return Integer.valueOf(0);
+		}
+		return minPoolSize;
+	}
+
+	public void setMinPoolSize(Integer minPoolSize) {
+		this.minPoolSize = minPoolSize;
+	}
+
+	public Integer getMaxPoolSize() {
+		if (maxPoolSize == null){
+			return Integer.valueOf(0);
+		}
+		return maxPoolSize;
+	}
+
+	public void setMaxPoolSize(Integer maxPoolSize) {
+		this.maxPoolSize = maxPoolSize;
+	}
+
+	public Long getInUseCount() {
+		return inUseCount;
+	}
+
+	public void setInUseCount(Long inUseCount) {
+		this.inUseCount = inUseCount;
+	}
 
 	public Long getActiveCount() {
-		if (activeCount == null) {
-			activeCount = new Long(0);
-		}
-
 		return activeCount;
 	}
 
@@ -43,12 +83,28 @@ public class DatasourceMetrics extends AbstractEntity implements Serializable{
 		this.activeCount = activeCount;
 	}
 
-	public Long getMaxUsedCount() {
-		return maxUsedCount;
+	public Long getAvailableCount() {
+		return availableCount;
 	}
 
-	public void setMaxUsedCount(Long maxUsedCount) {
-		this.maxUsedCount = maxUsedCount;
+	public void setAvailableCount(Long availableCount) {
+		this.availableCount = availableCount;
+	}
+
+	public Long getAverageBlockingTime() {
+		return averageBlockingTime;
+	}
+
+	public void setAverageBlockingTime(Long averageBlockingTime) {
+		this.averageBlockingTime = averageBlockingTime;
+	}
+
+	public Long getAverageCreationTime() {
+		return averageCreationTime;
+	}
+
+	public void setAverageCreationTime(Long averageCreationTime) {
+		this.averageCreationTime = averageCreationTime;
 	}
 
 	public Long getCreatedCount() {
@@ -66,29 +122,37 @@ public class DatasourceMetrics extends AbstractEntity implements Serializable{
 	public void setDestroyedCount(Long destroyedCount) {
 		this.destroyedCount = destroyedCount;
 	}
-	
-	public Double getAverageBlockingTime() {
-		return averageBlockingTime;
+
+	public Long getMaxCreationTime() {
+		return maxCreationTime;
 	}
 
-	public void setAverageBlockingTime(Double averageBlockingTime) {
-		this.averageBlockingTime = averageBlockingTime;
+	public void setMaxCreationTime(Long maxCreationTime) {
+		this.maxCreationTime = maxCreationTime;
 	}
 
-	public Double getAverageCreationTime() {
-		return AverageCreationTime;
+	public Long getMaxUsedCount() {
+		return maxUsedCount;
 	}
 
-	public void setAverageCreationTime(Double averageCreationTime) {
-		AverageCreationTime = averageCreationTime;
+	public void setMaxUsedCount(Long maxUsedCount) {
+		this.maxUsedCount = maxUsedCount;
 	}
 
-	public Long getAvailableCount() {
-		return availableCount;
+	public Long getMaxWaitCount() {
+		return maxWaitCount;
 	}
 
-	public void setAvailableCount(Long availableCount) {
-		this.availableCount = availableCount;
+	public void setMaxWaitCount(Long maxWaitCount) {
+		this.maxWaitCount = maxWaitCount;
+	}
+
+	public Long getMaxWaitTime() {
+		return maxWaitTime;
+	}
+
+	public void setMaxWaitTime(Long maxWaitTime) {
+		this.maxWaitTime = maxWaitTime;
 	}
 
 	public Long getTimedOut() {
@@ -99,28 +163,20 @@ public class DatasourceMetrics extends AbstractEntity implements Serializable{
 		this.timedOut = timedOut;
 	}
 
-	public Double getMaxWaitTime() {
-		return maxWaitTime;
+	public Long getTotalBlockingTime() {
+		return totalBlockingTime;
 	}
 
-	public void setMaxWaitTime(Double maxWaitTime) {
-		this.maxWaitTime = maxWaitTime;
-	}
-	
-	public Date getTime() {
-		return time;
+	public void setTotalBlockingTime(Long totalBlockingTime) {
+		this.totalBlockingTime = totalBlockingTime;
 	}
 
-	public void setTime(Date time) {
-		this.time = time;
-	}
-	
-	public Datasource getDatasource() {
-		return datasource;
+	public Long getTotalCreationTime() {
+		return totalCreationTime;
 	}
 
-	public void setDatasource(Datasource datasource) {
-		this.datasource = datasource;
+	public void setTotalCreationTime(Long totalCreationTime) {
+		this.totalCreationTime = totalCreationTime;
 	}
 	
 }

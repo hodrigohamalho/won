@@ -3,9 +3,14 @@ package won.task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
+import javax.annotation.Resource;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
+import javax.ejb.Timeout;
+import javax.ejb.Timer;
+import javax.ejb.TimerService;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -17,6 +22,7 @@ import won.model.DC;
 import won.model.Datasource;
 import won.model.Server;
 import won.repository.DCRepository;
+import won.repository.DatasourceRepository;
 import won.util.CommonUtils;
 import won.util.HTTPUtil;
 import won.util.JSONUtil;
@@ -30,12 +36,25 @@ import won.util.JSONUtil;
 public class MetricsCollector {
 	
 	@Inject
+	private Logger log;
+	
+	@Resource
+    TimerService timerService;
+	
+	@Timeout
+    public void programmaticTimeout(Timer timer) {
+		log.info("Programmatic timeout occurred.");
+    }
+	
+	@Inject
 	private DCRepository dcRepository;
+	@Inject
+	private DatasourceRepository datasourceRepository;
 	
 	@Inject
 	private Event<Server> serverEvent;
 	
-	@Schedule(minute="*/1", hour="*")
+	@Schedule(dayOfWeek = "*", hour = "*", minute = "*/5", second = "*", year = "*", persistent = false)
     public void collect(){
     	servers();
     }
@@ -76,10 +95,10 @@ public class MetricsCollector {
 							List<String> dsNames = JSONUtil.keysFromObject(datasourcesJSON, "data-source");
 							for (String dsName : dsNames) {
 								JSONObject dsJSON = datasourcesJSON.getJSONObject("data-source").getJSONObject(dsName);
-								Datasource datasource = new Datasource();
-								datasource.setName(dsJSON.getString("name"));
+								Datasource datasource = datasourceRepository.findByNameAndHost(dsName, hostName);
+								datasource.setName(dsName);
 								datasource.setDriverName(dsJSON.getString("driver-name"));
-								datasource.setConnectionUrl(dsJSON.getString("connectionUrl"));
+								datasource.setConnectionUrl(dsJSON.getString("connection-url"));
 								datasource.setMinPoolSize(dsJSON.getInt("min-pool-size"));
 								datasource.setMaxPoolSize(dsJSON.getInt("max-pool-size"));
 								
@@ -99,6 +118,7 @@ public class MetricsCollector {
 								datasource.setTimedOut(pool.getLong("TimedOut"));
 								datasource.setTotalBlockingTime(pool.getLong("TotalBlockingTime"));
 								datasource.setTotalCreationTime(pool.getLong("TotalCreationTime"));
+								System.out.println(datasource);
 							}
 							
 							serverEvent.fire(server);

@@ -1,16 +1,17 @@
 package won.model;
 
-import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Rodrigo Ramalho
  *         hodrigohamalho@gmail.com.
  */
-public class Server implements Serializable{
+public class Server extends AbstractEntity{
 
     private String name;
     private String host;
     private DC dc;
+    private List<Datasource> datasources;
     
 	public String getName() {
 		return name;

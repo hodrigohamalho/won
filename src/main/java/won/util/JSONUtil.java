@@ -14,7 +14,11 @@ import org.json.JSONObject;
 public class JSONUtil {
 
 	public static List<String> keysFromObject(JSONObject rootLevel, String object) throws JSONException {
-		return jsonArrayToList(rootLevel.getJSONObject(object).names());
+		try{
+			return jsonArrayToList(rootLevel.getJSONObject(object).names());
+		}catch(Exception e){
+			return new ArrayList<String>();
+		}
 	}
 
     public static List<String> serverGroupNames(JSONObject rootLevel) throws JSONException {

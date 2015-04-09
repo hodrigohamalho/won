@@ -1,10 +1,15 @@
 package won.model;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import java.util.Date;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 
 /**
  * @author Rodrigo Ramalho
@@ -12,11 +17,13 @@ import java.util.Date;
  *
  */
 @MappedSuperclass
-public abstract class AbstractEntity {
+public abstract class AbstractEntity implements Serializable{
 	
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	@Column(name="created_at")
 	private Date createdAt;
+	@Column(name="updated_at")
 	private Date updatedAt;
 	
 	public Long getId() {
@@ -28,6 +35,7 @@ public abstract class AbstractEntity {
 	public Date getCreatedAt() {
 		return createdAt;
 	}
+	
 	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
@@ -35,14 +43,18 @@ public abstract class AbstractEntity {
 	public Date getUpdatedAt() {
 		return updatedAt;
 	}
+	
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 	
-	public Date getDateTime() {
-		return createdAt;
+	@PrePersist
+	protected void onCreate() {
+		updatedAt = createdAt = new Date();
 	}
-	public void setDateTime(Date dateTime) {
-		this.createdAt = dateTime;
+
+	@PreUpdate
+	protected void onUpdate() {
+		updatedAt = new Date();
 	}
 }
